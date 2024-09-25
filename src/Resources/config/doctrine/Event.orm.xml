@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <!-- Mapping de l'entité Event -->
+    <entity name="Sylius\Plugin\PhotoPlugin\Entity\Event" table="event">
+
+        <!-- Clé primaire auto-générée -->
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <!-- Champ 'name' de type string -->
+        <field name="name" type="string" column="name"/>
+
+        <!-- Champ 'date' de type datetime -->
+        <field name="date" type="datetime" column="date"/>
+
+        <!-- Relation ManyToMany avec Photographer -->
+        <many-to-many field="photographers" target-entity="Sylius\Plugin\PhotoPlugin\Entity\Photographer" inversed-by="events">
+            <join-table name="events_photographers">
+                <join-columns>
+                    <join-column name="event_id" referenced-column-name="id" nullable="false" unique="false" />
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="photographer_id" referenced-column-name="id" nullable="false" unique="false" />
+                </inverse-join-columns>
+            </join-table>
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </many-to-many>
+
+    </entity>
+
+</doctrine-mapping>

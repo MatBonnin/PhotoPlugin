@@ -1,0 +1,19 @@
+app_admin_photographer:
+    type: sylius.resource
+    prefix: /admin
+    resource: |
+        alias: app.photographer
+        section: admin
+        templates: '@SyliusAdmin\\Crud'
+        only: ['index', 'create', 'update', 'delete']
+        grid: app_photographer
+
+app_admin_event:
+    type: sylius.resource
+    prefix: /admin
+    resource: |
+        alias: app.event
+        section: admin
+        templates: '@SyliusAdmin\\Crud'
+        only: ['index', 'create', 'update', 'delete']
+        grid: app_event

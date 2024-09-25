@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <!-- Mapping de l'entité Photographer -->
+    <entity name="Sylius\Plugin\PhotoPlugin\Entity\Photographer" table="photographer">
+
+        <!-- Clé primaire auto-générée -->
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <!-- Champ 'name' de type string -->
+        <field name="name" type="string" column="name"/>
+
+        <!-- Relation ManyToMany avec Event -->
+        <many-to-many field="events" target-entity="Sylius\Plugin\PhotoPlugin\Entity\Event" mapped-by="photographers">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </many-to-many>
+
+    </entity>
+
+</doctrine-mapping>

@@ -1,0 +1,4 @@
+services:
+    Sylius\Plugin\PhotoPlugin\Form\Type\Product\PhotoType:
+        tags:
+            - { name: form.type }

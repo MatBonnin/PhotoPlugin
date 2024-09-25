@@ -1,0 +1,17 @@
+sylius_resource:
+    resources:
+        app.photographer:
+            classes:
+                model: Sylius\Plugin\PhotoPlugin\Entity\Photographer
+                controller: Sylius\Plugin\PhotoPlugin\Controller\PhotographerController
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+                factory: Sylius\Component\Resource\Factory\Factory
+                form: Sylius\Plugin\PhotoPlugin\Form\Type\PhotographerType
+
+        app.event:
+            classes:
+                model: Sylius\Plugin\PhotoPlugin\Entity\Event
+                controller: Sylius\Plugin\PhotoPlugin\Controller\EventController
+                repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
+                factory: Sylius\Component\Resource\Factory\Factory
+                form: Sylius\Plugin\PhotoPlugin\Form\Type\EventType

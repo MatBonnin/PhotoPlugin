@@ -1,0 +1,5 @@
+<select name="photographers" id="photographers">
+    {% for photographer in data %}
+        <option value="{{ photographer.id }}">{{ photographer.name }}</option>
+    {% endfor %}
+</select>

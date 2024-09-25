@@ -1,0 +1,16 @@
+{% extends '@SyliusShop/Product/show.html.twig' %}
+
+{% block content %}
+    <div class="photo-product">
+        <img src="{{ asset('images/products/' ~ product.imageName) }}" alt="{{ product.name }}" class="photo-image">
+        <h1>{{ product.name }}</h1>
+        <p>{{ product.description }}</p>
+        <ul>
+            <li>Résolution : {{ product.attributes.resolution }}</li>
+            <li>Format : {{ product.attributes.format }}</li>
+            <li>Licence : {{ product.attributes.license }}</li>
+        </ul>
+        <p>Prix : {{ product.price|money }}</p>
+        <a href="{{ path('sylius_shop_cart_item_add', {'id': product.id}) }}" class="btn btn-primary">Ajouter au panier</a>
+    </div>
+{% endblock %}

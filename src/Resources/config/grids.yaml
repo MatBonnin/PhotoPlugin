@@ -1,0 +1,58 @@
+sylius_grid:
+    grids:
+        app_photographer:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: Sylius\Plugin\PhotoPlugin\Entity\Photographer
+            fields:
+                id:
+                    type: string
+                    label: ID
+                    sortable: true
+                name:
+                    type: string
+                    label: Nom
+                    sortable: true
+            actions:
+                main:
+                    create:
+                        type: create
+                item:
+                    update:
+                        type: update
+                    delete:
+                        type: delete
+
+        app_event:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: Sylius\Plugin\PhotoPlugin\Entity\Event
+            fields:
+                id:
+                    type: string
+                    label: ID
+                    sortable: true
+                name:
+                    type: string
+                    label: Nom
+                    sortable: true
+                date:
+                    type: datetime
+                    label: Date de l'événement
+                    sortable: true
+                photographers: # Ajout du champ photographers
+                    type: twig
+                    label: Photographes
+                    options:
+                        template: "@PhotoPlugin/Grid/Field/photographers.html.twig" # Chemin vers le template Twig personnalisé
+            actions:
+                main:
+                    create:
+                        type: create
+                item:
+                    update:
+                        type: update
+                    delete:
+                        type: delete
