@@ -1,3 +1,4 @@
+# src/Plugin/PhotoPlugin/Resources/config/grids.yaml
 sylius_grid:
     grids:
         app_photographer:
@@ -38,15 +39,20 @@ sylius_grid:
                     type: string
                     label: Nom
                     sortable: true
-                date:
+                startDate:
                     type: datetime
-                    label: Date de l'événement
+                    label: Date de début
                     sortable: true
-                photographers: # Ajout du champ photographers
+                endDate:
+                    type: datetime
+                    label: Date de fin
+                    sortable: true
+                photographers:
                     type: twig
                     label: Photographes
+                    path: photographers
                     options:
-                        template: "@PhotoPlugin/Grid/Field/photographers.html.twig" # Chemin vers le template Twig personnalisé
+                        template: "@PhotoPlugin/Grid/Field/photographers.html.twig"
             actions:
                 main:
                     create:

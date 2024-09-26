@@ -26,9 +26,14 @@ class Event implements ResourceInterface
     private $name;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="date", nullable=true)
      */
-    private $date;
+    private $startDate;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private $endDate;
 
     /**
      * @ORM\ManyToMany(targetEntity="Photographer", inversedBy="events", cascade={"persist"})
@@ -62,14 +67,25 @@ class Event implements ResourceInterface
         return $this;
     }
 
-    public function getDate(): \DateTime
+    public function getStartDate(): \DateTimeInterface
     {
-        return $this->date;
+        return $this->startDate;
     }
 
-    public function setDate(\DateTime $date): self
+    public function setStartDate(\DateTimeInterface $startDate): self
     {
-        $this->date = $date;
+        $this->startDate = $startDate;
+        return $this;
+    }
+
+    public function getEndDate(): \DateTimeInterface
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(\DateTimeInterface $endDate): self
+    {
+        $this->endDate = $endDate;
         return $this;
     }
 
@@ -85,7 +101,7 @@ class Event implements ResourceInterface
     {
         if (!$this->photographers->contains($photographer)) {
             $this->photographers[] = $photographer;
-            $photographer->addEvent($this);
+            $photographer->addEvent($this); // Ajoute l'événement au photographe
         }
 
         return $this;

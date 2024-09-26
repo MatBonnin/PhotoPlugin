@@ -15,8 +15,11 @@
         <!-- Champ 'name' de type string -->
         <field name="name" type="string" column="name"/>
 
-        <!-- Champ 'date' de type datetime -->
-        <field name="date" type="datetime" column="date"/>
+        <!-- Champ 'startDate' de type date -->
+        <field name="startDate" type="date" column="start_date"/>
+
+        <!-- Champ 'endDate' de type date -->
+        <field name="endDate" type="date" column="end_date"/>
 
         <!-- Relation ManyToMany avec Photographer -->
         <many-to-many field="photographers" target-entity="Sylius\Plugin\PhotoPlugin\Entity\Photographer" inversed-by="events">

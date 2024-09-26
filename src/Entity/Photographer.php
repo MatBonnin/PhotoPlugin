@@ -65,7 +65,7 @@ class Photographer implements ResourceInterface
     {
         if (!$this->events->contains($event)) {
             $this->events[] = $event;
-            $event->addPhotographer($this);
+            $event->addPhotographer($this); // Synchronisation côté Event
         }
 
         return $this;
