@@ -5,8 +5,8 @@ app_admin_photographer:
         alias: app.photographer
         section: admin
         templates: '@SyliusAdmin\\Crud'
-        only: ['index', 'create', 'update', 'delete']
         grid: app_photographer
+        only: ['index', 'create', 'update', 'delete']
 
 app_admin_event:
     type: sylius.resource
@@ -17,3 +17,13 @@ app_admin_event:
         templates: '@SyliusAdmin\\Crud'
         only: ['index', 'create', 'update', 'delete']
         grid: app_event
+
+app_admin_product:
+    resource: |
+        alias: sylius.product
+        section: admin
+        templates: '@SyliusAdmin\\Crud'
+        only: ['index', 'show', 'update', 'delete']
+        grid: app_product
+    type: sylius.resource
+    prefix: /admin

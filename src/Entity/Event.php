@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity()
  * @ORM\Table(name="event")
  */
 class Event implements ResourceInterface
@@ -18,31 +18,31 @@ class Event implements ResourceInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $name;
+    private string $name;
 
     /**
      * @ORM\Column(type="date", nullable=true)
      */
-    private $startDate;
+    private ?\DateTimeInterface $startDate = null;
 
     /**
      * @ORM\Column(type="date", nullable=true)
      */
-    private $endDate;
+    private ?\DateTimeInterface $endDate = null;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Photographer", inversedBy="events", cascade={"persist"})
-     * @ORM\JoinTable(name="events_photographers",
+     * @ORM\ManyToMany(targetEntity=Photographer::class, inversedBy="events", cascade={"persist"})
+     * @ORM\JoinTable(name="event_photographers",
      *      joinColumns={@ORM\JoinColumn(name="event_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="photographer_id", referencedColumnName="id")}
      * )
      */
-    private $photographers;
+    private Collection $photographers;
 
     public function __construct()
     {
@@ -67,23 +67,23 @@ class Event implements ResourceInterface
         return $this;
     }
 
-    public function getStartDate(): \DateTimeInterface
+    public function getStartDate(): ?\DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(\DateTimeInterface $startDate): self
+    public function setStartDate(?\DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
         return $this;
     }
 
-    public function getEndDate(): \DateTimeInterface
+    public function getEndDate(): ?\DateTimeInterface
     {
         return $this->endDate;
     }
 
-    public function setEndDate(\DateTimeInterface $endDate): self
+    public function setEndDate(?\DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
         return $this;
@@ -101,7 +101,7 @@ class Event implements ResourceInterface
     {
         if (!$this->photographers->contains($photographer)) {
             $this->photographers[] = $photographer;
-            $photographer->addEvent($this); // Ajoute l'événement au photographe
+            $photographer->addEvent($this);
         }
 
         return $this;

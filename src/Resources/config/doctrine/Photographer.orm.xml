@@ -13,7 +13,16 @@
         </id>
 
         <!-- Champ 'name' de type string -->
-        <field name="name" type="string" column="name"/>
+        <field name="name" type="string" column="name" nullable="false"/>
+
+        <!-- Champ 'email' de type string et unique -->
+        <field name="email" type="string" column="email" unique="true" nullable="false"/>
+
+        <!-- Champ 'password' de type string -->
+        <field name="password" type="string" column="password" nullable="false"/>
+
+        <!-- Champ 'roles' de type json -->
+        <field name="roles" type="json" column="roles" nullable="false"/>
 
         <!-- Relation ManyToMany avec Event -->
         <many-to-many field="events" target-entity="Sylius\Plugin\PhotoPlugin\Entity\Event" mapped-by="photographers">

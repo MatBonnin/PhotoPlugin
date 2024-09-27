@@ -1,0 +1,4 @@
+# translations/messages.fr.yaml
+app:
+    ui:
+        events: "Gestion des événements"

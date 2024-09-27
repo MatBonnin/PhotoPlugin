@@ -1,0 +1,26 @@
+# src/Plugin/Resources/config/services.yaml
+services:
+    # Enregistrement du formulaire PhotographerType avec injection du service de hachage des mots de passe
+    Sylius\Plugin\PhotoPlugin\Form\Type\PhotographerType:
+        arguments:
+            $passwordHasher: "@security.password_hasher"
+        tags:
+            - { name: form.type }
+
+    # Contrôleur de sécurité pour la gestion des photographes
+    Sylius\Plugin\PhotoPlugin\Controller\SecurityController:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    # Contrôleur du tableau de bord des photographes
+    Sylius\Plugin\PhotoPlugin\Controller\PhotographerDashboardController:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    # Si tu as d'autres services, tu peux les ajouter ici
+    Sylius\Plugin\PhotoPlugin\Controller\ProductController:
+        autowire: true
+        autoconfigure: true
+        public: true

@@ -1,0 +1,20 @@
+# src/Plugin/Resources/config/routes.yaml
+photographer_login:
+    path: /photographer/login
+    controller: Sylius\Plugin\PhotoPlugin\Controller\SecurityController::login
+
+photographer_logout:
+    path: /photographer/logout
+
+photographer_dashboard:
+    path: /photographer/dashboard
+    controller: Sylius\Plugin\PhotoPlugin\Controller\PhotographerDashboardController::index
+
+photographer_create:
+    path: /admin/photographer/create
+    controller: Sylius\Plugin\PhotoPlugin\Controller\PhotographerController::create
+    methods: [GET, POST]
+
+photographer_upload_photo:
+    path: /photographer/upload
+    controller: Sylius\Plugin\PhotoPlugin\Controller\ProductController::upload

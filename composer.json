@@ -63,7 +63,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Sylius\\Plugin\\PhotoPlugin\\": "src/"
+            "Sylius\\Plugin\\PhotoPlugin\\": "src/",
+            "App\\": "src/"
         }
     },
     "autoload-dev": {
