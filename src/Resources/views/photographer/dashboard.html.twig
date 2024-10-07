@@ -3,24 +3,7 @@
 {% block body %}
     <h1>Tableau de bord Photographe</h1>
 
-    <a href="{{ path('photographer_upload_photo') }}">Uploader une photo</a>
+    <p>Bienvenue, {{ app.user.username }} !</p>
 
-    <h2>Vos photos</h2>
-
-    {% if products %}
-        <ul>
-            {% for product in products %}
-                <li>
-                    {% for image in product.images %}
-                        <img src="{{ asset('uploads/photos/' ~ image.path) }}" alt="" width="200">
-                    {% endfor %}
-                    <p>Événement : {{ product.event.name }}</p>
-                    <p>Produit : {{ product.name }}</p>
-                    <p>Prix : {{ product.variants.first.price|number_format(2, '.', ',') }} €</p>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Vous n'avez pas encore téléchargé de photos.</p>
-    {% endif %}
+    <a href="{{ path('photographer_upload') }}">Uploader des photos</a>
 {% endblock %}

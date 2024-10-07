@@ -24,3 +24,10 @@ services:
         autowire: true
         autoconfigure: true
         public: true
+        arguments:
+            $entityManager: '@doctrine.orm.entity_manager'
+        
+    Sylius\Plugin\PhotoPlugin\Controller\PhotoController:
+        autowire: true
+        autoconfigure: true
+        public: true

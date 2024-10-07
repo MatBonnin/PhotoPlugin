@@ -1,6 +1,6 @@
 <?php
 
-namespace Sylius\Plugin\PhotoPlugin;
+namespace Sylius\Plugin\App;
 
 use Sylius\Bundle\CoreBundle\Application\SyliusPluginTrait;
 use Symfony\Component\HttpKernel\Bundle\Bundle;

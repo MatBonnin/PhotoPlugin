@@ -13,13 +13,3 @@ sylius_resource:
                 repository: Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository
                 factory: Sylius\Component\Resource\Factory\Factory
                 form: Sylius\Plugin\PhotoPlugin\Form\Type\EventType
-
-sylius_product:
-    resources:
-        product:
-            classes:
-                model: Sylius\Plugin\PhotoPlugin\Entity\Product
-        product_variant:
-            classes:
-                model: Sylius\Plugin\PhotoPlugin\Entity\ProductVariant
-        

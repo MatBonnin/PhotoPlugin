@@ -1,11 +1,12 @@
 {% extends '@PhotoPlugin/base.html.twig' %}
 
 {% block body %}
-    <h1>Uploader une photo</h1>
+    <h1>Uploader des Photos</h1>
 
     {{ form_start(form) }}
-        {{ form_row(form.event) }}
-        {{ form_row(form.imageFile) }}
-        <button type="submit">Uploader</button>
+    {{ form_row(form.event) }}
+    {{ form_row(form.photos) }}
+
+    <button type="submit">Uploader</button>
     {{ form_end(form) }}
 {% endblock %}

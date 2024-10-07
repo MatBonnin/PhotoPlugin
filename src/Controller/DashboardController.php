@@ -3,9 +3,9 @@
 namespace Sylius\Plugin\PhotoPlugin\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Sylius\Plugin\PhotoPlugin\Entity\Product;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+
 
 
 class DashboardController extends AbstractController

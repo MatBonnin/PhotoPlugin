@@ -3,6 +3,9 @@ photographer_login:
     path: /photographer/login
     controller: Sylius\Plugin\PhotoPlugin\Controller\SecurityController::login
 
+photographer_login_check:
+    path: /photographer/login_check
+
 photographer_logout:
     path: /photographer/logout
 
@@ -15,6 +18,6 @@ photographer_create:
     controller: Sylius\Plugin\PhotoPlugin\Controller\PhotographerController::create
     methods: [GET, POST]
 
-photographer_upload_photo:
+photographer_upload:
     path: /photographer/upload
-    controller: Sylius\Plugin\PhotoPlugin\Controller\ProductController::upload
+    controller: Sylius\Plugin\PhotoPlugin\Controller\PhotoController::upload
