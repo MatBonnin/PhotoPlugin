@@ -1,4 +1,5 @@
 <?php
+
 namespace Sylius\Plugin\PhotoPlugin\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +10,7 @@ use App\Entity\Product\Product;
 use App\Entity\Product\ProductImage;
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\Filesystem\Filesystem;
 
 class PhotoController extends AbstractController
 {
@@ -27,40 +28,40 @@ class PhotoController extends AbstractController
             $slugify = new Slugify();
             $eventSlug = $slugify->slugify($event->getName());
 
-            // Créer le dossier de destination si nécessaire
+            // Créer le dossier de destination si nécessaire en utilisant Filesystem
             $uploadDir = sprintf('%s/public/media/image/%s', $this->getParameter('kernel.project_dir'), $eventSlug);
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
+            $filesystem = new Filesystem();
+            if (!$filesystem->exists($uploadDir)) {
+                $filesystem->mkdir($uploadDir, 0755);
             }
 
             foreach ($photos as $photo) {
                 // Créer un nouveau produit
                 $product = new Product();
-                $product->setCurrentLocale('en_US'); // Adapter à votre configuration
-                $product->setName($photo->getClientOriginalName());
+                $product->setCurrentLocale('fr_FR'); // Adapter à votre configuration
+                $product->setName(pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME));
                 $product->setCode(uniqid('PHOTO_'));
                 $product->setPhotographer($this->getUser());
                 $product->setEvent($event);
                 $product->setEnabled(true);
 
-                // Générer un slug à partir du nom du fichier
-                $slug = $slugify->slugify($photo->getClientOriginalName());
+                // Générer un slug unique
+                $slug = $slugify->slugify(pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME) . '-' . uniqid());
                 $product->setSlug($slug);
 
                 // Déplacer le fichier vers le dossier approprié
-                $newFileName = uniqid() . '.' . $photo->guessExtension();
+                $newFileName = bin2hex(random_bytes(8)) . '.' . $photo->guessExtension();
                 $photo->move($uploadDir, $newFileName);
 
-                // Créer un ProductImage et définir manuellement le chemin
+                // Créer un ProductImage et définir le chemin relatif pour Sylius
                 $productImage = new ProductImage();
-                $productImage->setPath(sprintf('media/image/%s/%s', $eventSlug, $newFileName));
+                $productImage->setPath(sprintf('%s/%s', $eventSlug, $newFileName)); // Mettre uniquement le chemin relatif à "media/image"
                 $productImage->setType('main');
 
                 // Ajouter l'image au produit
                 $product->addImage($productImage);
 
-                // Persister le produit et l'image
-                $em->persist($productImage);
+                // Persister le produit
                 $em->persist($product);
             }
 
