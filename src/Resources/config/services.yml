@@ -25,9 +25,24 @@ services:
         autoconfigure: true
         public: true
         arguments:
-            $entityManager: '@doctrine.orm.entity_manager'
-        
+            $entityManager: "@doctrine.orm.entity_manager"
+
     Sylius\Plugin\PhotoPlugin\Controller\PhotoController:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    Sylius\Plugin\PhotoPlugin\EventListener\EventSlugListener:
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+
+    Sylius\Plugin\PhotoPlugin\Controller\EventController:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    Sylius\Plugin\PhotoPlugin\Controller\shop\EventShopController:
         autowire: true
         autoconfigure: true
         public: true

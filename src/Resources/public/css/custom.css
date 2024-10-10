@@ -1,0 +1,22 @@
+/* Ajuster la hauteur des images dans les cartes */
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+/* Centrer le texte des titres des cartes */
+.card-title {
+    text-align: center;
+    font-size: 1rem;
+}
+
+/* Marges entre les cartes */
+.card {
+    margin-bottom: 1rem;
+}
+
+/* Style des titres des événements */
+h2 {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 0.5rem;
+}

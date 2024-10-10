@@ -1,0 +1,37 @@
+{% extends '@PhotoPlugin/base.html.twig' %}
+
+{% block title %}{{ event.name }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4">{{ event.name }}</h1>
+        <p>{{ event.description }}</p>
+
+        {% if products is not empty %}
+            <div class="row">
+                {% for product in products %}
+                    <div class="col-md-3 mb-4">
+                        <div class="card h-100">
+                            <a href="{{ path('sylius_shop_product_show', {'slug': product.slug}) }}">
+                                {% if product.images|length > 0 %}
+                                    <img src="{{ asset('media/image/' ~ product.images|first.path) }}" class="card-img-top" alt="{{ product.name }}">
+                                {% else %}
+                                    <img src="https://via.placeholder.com/300x200?text=Aucune+image" class="card-img-top" alt="Aucune image disponible">
+                                {% endif %}
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ product.name }}</h5>
+                                <p class="card-text">{{ product.shortDescription }}</p>
+                                <a href="{{ path('sylius_shop_product_show', {'slug': product.slug}) }}" class="btn btn-primary">Voir la photo</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <p>Aucune photo disponible pour cet événement.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -2,12 +2,48 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Welcome{% endblock %}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <title>{% block title %}Photo Plugin{% endblock %}</title>
+   {% block stylesheets %}
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Ekko Lightbox CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.css">
+    <!-- Votre CSS personnalisé -->
+    <link rel="stylesheet" href="{{ asset('bundles/photoplugin/css/custom.css') }}">
+
+{% endblock %}
+
 </head>
 <body>
-    <div class="container">
-        {% block body %}{% endblock %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{{ path('sylius_shop_homepage') }}">Votre Boutique</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('event_list') }}">Événements</a>
+            </li>
+            <!-- Autres liens -->
+        </ul>
     </div>
+</nav>
+
+
+    {% block body %}{% endblock %}
+
+
+{% block javascripts %}
+    <!-- jQuery et Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Ekko Lightbox JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js"></script>
+    <script>
+        $(document).on('click', '[data-toggle="lightbox"]', function(event) {
+            event.preventDefault();
+            $(this).ekkoLightbox();
+        });
+    </script>
+{% endblock %}
 </body>
 </html>

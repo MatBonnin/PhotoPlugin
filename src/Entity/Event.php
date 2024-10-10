@@ -25,6 +25,13 @@ class Event implements ResourceInterface
      */
     private string $name;
 
+
+
+    /**
+     * @ORM\Column(type="string", length=255, unique=true)
+     */
+    private string $slug;
+
     /**
      * @ORM\Column(type="date", nullable=true)
      */
@@ -36,6 +43,12 @@ class Event implements ResourceInterface
     private ?\DateTimeInterface $endDate = null;
 
     /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $description = null;
+
+
+    /**
      * @ORM\ManyToMany(targetEntity=Photographer::class, inversedBy="events", cascade={"persist"})
      * @ORM\JoinTable(name="event_photographers",
      *      joinColumns={@ORM\JoinColumn(name="event_id", referencedColumnName="id")},
@@ -43,6 +56,18 @@ class Event implements ResourceInterface
      * )
      */
     private Collection $photographers;
+
+    //setter and getter slug
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+        return $this;
+    }
 
     public function __construct()
     {
@@ -113,6 +138,17 @@ class Event implements ResourceInterface
             $photographer->removeEvent($this);
         }
 
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
         return $this;
     }
 }

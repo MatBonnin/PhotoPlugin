@@ -21,3 +21,13 @@ photographer_create:
 photographer_upload:
     path: /photographer/upload
     controller: Sylius\Plugin\PhotoPlugin\Controller\PhotoController::upload
+
+event_photos:
+    path: /evenement/{slug}
+    controller: Sylius\Plugin\PhotoPlugin\Controller\shop\EventShopController::show
+    methods: [GET]
+
+event_list:
+    path: /evenements
+    controller: Sylius\Plugin\PhotoPlugin\Controller\shop\EventShopController::list
+    methods: [GET]
