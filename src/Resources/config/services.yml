@@ -46,3 +46,10 @@ services:
         autowire: true
         autoconfigure: true
         public: true
+
+    app.pricing.quantity_price_calculator:
+        class: Sylius\Plugin\PhotoPlugin\service\QuantityPriceCalculator
+        arguments:
+            - "@sylius.context.cart"
+        tags:
+            - { name: sylius.price_calculator, type: standard }

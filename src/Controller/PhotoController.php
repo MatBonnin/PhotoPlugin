@@ -19,6 +19,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Sylius\Component\Core\Model\ChannelInterface;
 use App\Entity\Channel\ChannelPricing;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
+use Sylius\Plugin\PhotoPlugin\Entity\QuantityPrice;
 
 class PhotoController extends AbstractController
 {
@@ -103,166 +104,282 @@ class PhotoController extends AbstractController
                     // Photos Digitales / Numériques
                     [
                         'name' => 'Fichier numérique basse résolution 2000PX en téléchargement automatisé et instantané.',
-                        'price' => 1100, // 11.00 €
-                        'originalPrice' => 1100, // Même prix pour l'instant
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1100], // 11.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1000], // 10.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 900],  // 9.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 800],  // 8.00 €
+                            ['min' => 9, 'max' => null, 'price' => 700], // 7.00 €
+                        ],
                     ],
                     [
                         'name' => 'Fichier numérique HD taille ≥ 5000PX, idéal pour tirages tous formats. Livraison via Wetransfert. Délai 1 à 3 Jours.',
-                        'price' => 1800, // 18.00 €
-                        'originalPrice' => 1800,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1800], // 18.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1700], // 17.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 1600], // 16.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1500], // 15.00 €
+                            ['min' => 9, 'max' => null, 'price' => 1400], // 14.00 €
+                        ],
                     ],
                     [
                         'name' => 'Fichier numérique HD taille ≥ 5000PX, avec incrustation de la borne du Col, idéal pour tirages tous formats. Livraison via Wetransfert. Délai 1 à 3 Jours.',
-                        'price' => 2200, // 22.00 €
-                        'originalPrice' => 2200,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 2200], // 22.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 2100], // 21.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 2000], // 20.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1900], // 19.00 €
+                            ['min' => 9, 'max' => null, 'price' => 1800], // 18.00 €
+                        ],
                     ],
 
                     // Tirages Papiers (250gr/m² Lustré)
                     [
                         'name' => 'Format 15x20 cm',
-                        'price' => 1300, // 13.00 €
-                        'originalPrice' => 1300,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1300], // 13.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1200], // 12.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 1100], // 11.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1000], // 10.00 €
+                            // Pas de prix pour 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 15X20 cm avec incrustation de la borne du Col.',
-                        'price' => 1700, // 17.00 €
-                        'originalPrice' => 1700,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1700], // 17.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1600], // 16.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 1500], // 15.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1400], // 14.00 €
+                            // Pas de prix pour 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 15x21 cm présenté dans un cartonnage',
-                        'price' => 1700, // 17.00 €
-                        'originalPrice' => 1700,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1700], // 17.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1600], // 16.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 1500], // 15.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1400], // 14.00 €
+                            // Pas de prix pour 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 18x24 cm',
-                        'price' => 1500, // 15.00 €
-                        'originalPrice' => 1500,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1500], // 15.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1400], // 14.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 1300], // 13.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1200], // 12.00 €
+                            // Pas de prix pour 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 18X24 cm avec incrustation de la borne du Col.',
-                        'price' => 1900, // 19.00 €
-                        'originalPrice' => 1900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1900], // 19.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1800], // 18.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 1700], // 17.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1600], // 16.00 €
+                            // Pas de prix pour 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 18x24 cm présenté dans un cartonnage',
-                        'price' => 1900, // 19.00 €
-                        'originalPrice' => 1900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1900], // 19.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1800], // 18.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 1700], // 17.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1600], // 16.00 €
+                            // Pas de prix pour 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 20x30 cm',
-                        'price' => 1800, // 18.00 €
-                        'originalPrice' => 1800,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 1800], // 18.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 1700], // 17.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 1600], // 16.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1500], // 15.00 €
+                            // Pas de prix pour 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 20X30 cm titré avec incrustation de la borne du Col.',
-                        'price' => 2200, // 22.00 €
-                        'originalPrice' => 2200,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 2200], // 22.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 2100], // 21.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 2000], // 20.00 €
+                            ['min' => 6, 'max' => 8, 'price' => 1900], // 19.00 €
+                            ['min' => 9, 'max' => null, 'price' => 1800], // 18.00 €
+                        ],
                     ],
                     [
                         'name' => 'Format 30x40 cm (Fichier HD offert)',
-                        'price' => 3900, // 39.00 €
-                        'originalPrice' => 3900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 3900], // 39.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 3600], // 36.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 3300], // 33.00 €
+                            // Pas de prix pour 'Pour 6 à 8' et 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 30x40 cm titré avec incrustation de la borne du Col. (Fichier HD offert)',
-                        'price' => 4300, // 43.00 €
-                        'originalPrice' => 4300,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 4300], // 43.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 4000], // 40.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 3700], // 37.00 €
+                            // Pas de prix pour 'Pour 6 à 8' et 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 40x60 cm (Fichier HD offert)',
-                        'price' => 4500, // 45.00 €
-                        'originalPrice' => 4500,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 4500], // 45.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 4200], // 42.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 4000], // 40.00 €
+                            // Pas de prix pour 'Pour 6 à 8' et 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 40x60 cm titré avec incrustation de la borne du Col. (Fichier HD offert)',
-                        'price' => 4900, // 49.00 €
-                        'originalPrice' => 4900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 4900], // 49.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 5900], // 59.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 4400], // 44.00 €
+                            // Pas de prix pour 'Pour 6 à 8' et 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 50x75 cm (Fichier HD offert)',
-                        'price' => 5500, // 55.00 €
-                        'originalPrice' => 5500,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 5500], // 55.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 5200], // 52.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 5000], // 50.00 €
+                            // Pas de prix pour 'Pour 6 à 8' et 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 50x75 cm titré avec incrustation de la borne du Col. (Fichier HD offert)',
-                        'price' => 5900, // 59.00 €
-                        'originalPrice' => 5900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 5900], // 59.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 5600], // 56.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 5400], // 54.00 €
+                            // Pas de prix pour 'Pour 6 à 8' et 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format ﻿60x90 cm (Fichier HD offert)',
-                        'price' => 7500, // 75.00 €
-                        'originalPrice' => 7500,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 7500], // 75.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 7200], // 72.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 7000], // 70.00 €
+                            // Pas de prix pour 'Pour 6 à 8' et 'Pour 9 et +'
+                        ],
                     ],
                     [
                         'name' => 'Format 60x90 cm (Fichier HD offert) avec incrustation de la borne du Col.',
-                        'price' => 7900, // 79.00 €
-                        'originalPrice' => 7900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 7900], // 79.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 7600], // 76.00 €
+                            ['min' => 3, 'max' => 5, 'price' => 7300], // 73.00 €
+                            // Pas de prix pour 'Pour 6 à 8' et 'Pour 9 et +'
+                        ],
                     ],
 
                     // Photos Supports Rigides (Aluminium 2 mm)(Produit fini Prêt à mettre au mur)
                     [
                         'name' => 'Photo sur Plaque 15x20 cm en Aluminium',
-                        'price' => 2500, // 25.00 €
-                        'originalPrice' => 2500,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 2500], // 25.00 €
+                            ['min' => 2, 'max' => null, 'price' => 2300], // 23.00 € (Pour 2 et +)
+                        ],
                     ],
                     [
                         'name' => 'Photo sur Plaque 18x24 cm en Aluminium',
-                        'price' => 2900, // 29.00 €
-                        'originalPrice' => 2900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 2900], // 29.00 €
+                            ['min' => 2, 'max' => null, 'price' => 2600], // 26.00 € (Pour 2 et +)
+                        ],
                     ],
                     [
                         'name' => 'Photo sur Plaque 20x30 cm en Aluminium',
-                        'price' => 3500, // 35.00 €
-                        'originalPrice' => 3500,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 3500], // 35.00 €
+                            ['min' => 2, 'max' => null, 'price' => 3200], // 32.00 € (Pour 2 et +)
+                        ],
                     ],
                     [
                         'name' => 'Photo personnalisée Magazine sur Plaque 20X30 cm en Aluminium',
-                        'price' => 4000, // 40.00 €
-                        'originalPrice' => 4000,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 4000], // 40.00 €
+                            ['min' => 2, 'max' => null, 'price' => 3700], // 37.00 € (Pour 2 et +)
+                        ],
                     ],
                     [
                         'name' => 'Photo sur Plaque 30X40 cm en Aluminium',
-                        'price' => 5900, // 59.00 €
-                        'originalPrice' => 5900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 5900], // 59.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 5500], // 55.00 €
+                            // Pas de prix pour 'Pour 3 à 5' etc.
+                        ],
                     ],
                     [
                         'name' => 'Photo personnalisée Magazine sur Plaque 30X40 cm en Aluminium (nouveau !!)',
-                        'price' => 6400, // 64.00 €
-                        'originalPrice' => 6400,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 6400], // 64.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 5900], // 59.00 €
+                            // Pas de prix pour 'Pour 3 à 5' etc.
+                        ],
                     ],
                     [
                         'name' => 'Photo sur Plaque 40X60 cm en Aluminium',
-                        'price' => 7500, // 75.00 €
-                        'originalPrice' => 7500,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 7500], // 75.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 6900], // 69.00 €
+                            // Pas de prix pour 'Pour 3 à 5' etc.
+                        ],
                     ],
                     [
                         'name' => 'Photo personnalisée Magazine sur Plaque 40x60 cm en Aluminium (nouveau !!)',
-                        'price' => 7900, // 79.00 €
-                        'originalPrice' => 7900,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 7900], // 79.00 €
+                            ['min' => 2, 'max' => 2, 'price' => 7400], // 74.00 €
+                            // Pas de prix pour 'Pour 3 à 5' etc.
+                        ],
                     ],
 
                     // Photos sur Goodies
                     [
                         'name' => 'Mug céramique avec incrustation de la borne du Col',
-                        'price' => 2200, // 22.00 €
-                        'originalPrice' => 2200,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 2200], // 22.00 €
+                            ['min' => 2, 'max' => null, 'price' => 1900], // 19.00 € (Pour 2 et +)
+                        ],
                     ],
                     [
                         'name' => 'Tapis de souris en néoprène 197x235 mm',
-                        'price' => 2200, // 22.00 €
-                        'originalPrice' => 2200,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 2200], // 22.00 €
+                            ['min' => 2, 'max' => null, 'price' => 1900], // 19.00 € (Pour 2 et +)
+                        ],
                     ],
                     [
                         'name' => 'Puzzles 120 pièces 190x280 mm',
-                        'price' => 2200, // 22.00 €
-                        'originalPrice' => 2200,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 2200], // 22.00 €
+                            ['min' => 2, 'max' => null, 'price' => 1900], // 19.00 € (Pour 2 et +)
+                        ],
                     ],
                     [
                         'name' => 'T-Shirt Taille S/M/L/XL 100% Polyester',
-                        'price' => 2400, // 24.00 €
-                        'originalPrice' => 2400,
+                        'quantityPrices' => [
+                            ['min' => 1, 'max' => 1, 'price' => 2400], // 24.00 €
+                            ['min' => 2, 'max' => null, 'price' => 2200], // 22.00 € (Pour 2 et +)
+                        ],
                     ],
                 ];
+
 
 
                 foreach ($variantsData as $variantData) {
@@ -277,24 +394,23 @@ class PhotoController extends AbstractController
                     // Créer un ChannelPricing
                     $channelPricing = new ChannelPricing();
                     $channelPricing->setChannelCode($channel->getCode());
-                    $channelPricing->setPrice($variantData['price']);
+                    $channelPricing->setPrice($variantData['quantityPrices'][0]['price']); // Prix de base
 
-                    // Définir le prix d'origine si disponible
-                    if (isset($variantData['originalPrice'])) {
-                        $channelPricing->setOriginalPrice($variantData['originalPrice']);
-                    }
-
-                    // Si vous avez un champ pour le prix minimum
-                    if (isset($variantData['minimumPrice']) && method_exists($channelPricing, 'setMinimumPrice')) {
-                        $channelPricing->setMinimumPrice($variantData['minimumPrice']);
-                    }
-
-                    // Associer le ChannelPricing à la variante
                     $productVariant->addChannelPricing($channelPricing);
+
+                    // Ajouter les QuantityPrices
+                    foreach ($variantData['quantityPrices'] as $priceData) {
+                        $quantityPrice = new QuantityPrice();
+                        $quantityPrice->setMinQuantity($priceData['min']);
+                        $quantityPrice->setMaxQuantity($priceData['max']);
+                        $quantityPrice->setPrice($priceData['price']);
+                        $productVariant->addQuantityPrice($quantityPrice);
+                    }
 
                     // Associer la variante au produit
                     $product->addVariant($productVariant);
                 }
+
 
                 // Persister le produit
                 $em->persist($product);
