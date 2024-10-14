@@ -3,155 +3,394 @@
 namespace Sylius\Plugin\PhotoPlugin\Controller;
 
 use App\Entity\Product\ProductTaxon;
-use Sylius\Component\Taxonomy\Model\TaxonInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Sylius\Plugin\PhotoPlugin\Form\Type\MassPhotoUploadType;
 use App\Entity\Product\Product;
 use App\Entity\Product\ProductImage;
 use App\Entity\Product\ProductVariant;
+use App\Entity\Product\ProductOptionValue;
+use App\Entity\Channel\ChannelPricing;
+use Sylius\Plugin\PhotoPlugin\Entity\Event;
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
-use Sylius\Component\Core\Model\ChannelInterface;
-use App\Entity\Channel\ChannelPricing;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ProductInterface;
+use Sylius\Component\Product\Model\ProductOptionInterface;
 use Sylius\Component\Product\Model\ProductOptionValueInterface;
 use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
+use Sylius\Component\Taxonomy\Model\TaxonInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sylius\Plugin\PhotoPlugin\Form\Type\MassPhotoUploadType;
 
 class PhotoController extends AbstractController
 {
+    /**
+     * Gère l'upload de photos et la création des produits avec variantes.
+     */
     public function upload(
         Request $request,
         EntityManagerInterface $em,
         ChannelRepositoryInterface $channelRepository,
         ProductOptionRepositoryInterface $productOptionRepository
-    ) {
+    ): Response {
         $form = $this->createForm(MassPhotoUploadType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var Event $event */
             $event = $form->get('event')->getData();
             /** @var UploadedFile[] $photos */
             $photos = $form->get('photos')->getData();
 
+            // Génération du slug pour l'événement
             $slugify = new Slugify();
             $eventSlug = $slugify->slugify($event->getName());
 
-            // Utilisation du Filesystem de Symfony pour gérer les fichiers
-            $uploadDir = sprintf('%s/public/media/image/%s', $this->getParameter('kernel.project_dir'), $eventSlug);
-            $filesystem = new Filesystem();
-            if (!$filesystem->exists($uploadDir)) {
-                $filesystem->mkdir($uploadDir, 0755);
-            }
+            // Gestion du répertoire d'upload
+            $uploadDir = $this->getUploadDir($eventSlug);
+            $this->createDirectoryIfNotExists($uploadDir);
 
-            // Récupérer le taxon 'PHOTOS'
-            /** @var TaxonInterface|null $photosTaxon */
-            $photosTaxon = $em->getRepository(TaxonInterface::class)->findOneBy(['code' => 'PHOTOS']);
+            // Récupération des entités nécessaires
+            $photosTaxon = $this->getTaxon($em, 'PHOTOS');
+            $channel = $this->getChannel($channelRepository, 'FASHION_WEB');
+            $productOptions = $this->getProductOptions($productOptionRepository);
 
-            if (!$photosTaxon) {
-                throw new \Exception('Le taxon "PHOTOS" n\'a pas été trouvé.');
-            }
+            // Assurer que les valeurs d'options par défaut existent
+            $this->ensureDefaultOptionValues($em, $productOptions);
 
-            // Récupérer le canal 'FASHION_WEB'
-            $channel = $channelRepository->findOneByCode('FASHION_WEB');
+            // Récupérer les valeurs d'options par défaut
+            $defaultOptionValues = $this->getDefaultOptionValues($em, $productOptions);
 
-            if (!$channel) {
-                throw new \Exception('Le canal "FASHION_WEB" n\'a pas été trouvé.');
-            }
-
-            // Récupérer les options de produit
-            $productTypeOption = $productOptionRepository->findOneBy(['code' => 'product_type']);
-            $digitalOption = $productOptionRepository->findOneBy(['code' => 'digital_option']);
-            $printSizeOption = $productOptionRepository->findOneBy(['code' => 'print_size']);
-            $printOption = $productOptionRepository->findOneBy(['code' => 'print_option']);
-            $rigidSizeOption = $productOptionRepository->findOneBy(['code' => 'rigid_size']);
-            $rigidOption = $productOptionRepository->findOneBy(['code' => 'rigid_option']);
-            $goodieTypeOption = $productOptionRepository->findOneBy(['code' => 'goodie_type']);
-
-            // Vérifier que les options existent
-            if (!$productTypeOption || !$digitalOption || !$printSizeOption || !$printOption || !$rigidSizeOption || !$rigidOption || !$goodieTypeOption) {
-                throw new \Exception('Une ou plusieurs options de produit n\'ont pas été trouvées.');
-            }
+            // Définir les données des variantes
+            $variantsData = [
+                [
+                    'name_suffix' => 'Numérique HD',
+                    'price' => 2200, // 22,00 € en centimes
+                    'options' => [
+                        'product_type' => 'digital',
+                        'digital_option' => 'high_res',
+                    ],
+                ],
+                [
+                    'name_suffix' => 'Tirage 18x24 cm',
+                    'price' => 1500, // 15,00 € en centimes
+                    'options' => [
+                        'product_type' => 'print',
+                        'print_size' => '18x24',
+                    ],
+                ],
+                // Vous pouvez ajouter d'autres variantes ici
+            ];
 
             foreach ($photos as $photo) {
-                // Créer un nouveau produit
-                $product = new Product();
-                $product->setCurrentLocale('fr_FR');
-                $product->setFallbackLocale('fr_FR');
-                $productName = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
-                $product->setName($productName);
-                $product->setCode(uniqid('PHOTO_'));
-                $product->setPhotographer($this->getUser());
-                $product->setEvent($event);
-                $product->setEnabled(true);
+                // Création du produit
+                $product = $this->createProduct($event, $photo, $eventSlug);
 
-                // Descriptions
-                $product->setShortDescription('Photo de l’événement ' . $event->getName());
-                $product->setDescription('Cette photo a été prise lors de l’événement ' . $event->getName() . '.');
+                // Association au taxon et au canal
+                $this->associateTaxonAndChannel($product, $photosTaxon, $channel);
 
-                // Générer un slug unique
-                $slug = $slugify->slugify($productName . '-' . uniqid());
-                $product->setSlug($slug);
+                // Association des options au produit
+                $this->associateOptionsToProduct($product, $productOptions);
 
-                // Déplacer le fichier
-                $newFileName = bin2hex(random_bytes(8)) . '.' . $photo->guessExtension();
-                $photo->move($uploadDir, $newFileName);
+                // Génération des variantes
+                $this->generateVariants($product, $variantsData, $productOptions, $defaultOptionValues, $channel, $em);
 
-                // Créer l'image du produit
-                $productImage = new ProductImage();
-                $productImage->setPath(sprintf('%s/%s', $eventSlug, $newFileName)); // Chemin relatif à "media/image"
-                $productImage->setType('main');
-                $product->addImage($productImage);
-
-                // Associer le produit au taxon 'PHOTOS'
-                $productTaxon = new ProductTaxon();
-                $productTaxon->setProduct($product);
-                $productTaxon->setTaxon($photosTaxon);
-                $productTaxon->setPosition(0); // Optionnel
-
-                $product->addProductTaxon($productTaxon);
-
-                // Associer le produit au canal
-                $product->addChannel($channel);
-
-                // Associer les options au produit
-                $product->addOption($productTypeOption);
-                $product->addOption($digitalOption);
-                $product->addOption($printSizeOption);
-                $product->addOption($printOption);
-                $product->addOption($rigidSizeOption);
-                $product->addOption($rigidOption);
-                $product->addOption($goodieTypeOption);
-
-                // Créer une variante par défaut
-                $productVariant = new ProductVariant();
-                $productVariant->setCurrentLocale('fr_FR');
-                $productVariant->setName($productName . ' - Variante par défaut');
-                $productVariant->setCode(uniqid('VARIANT_'));
-                $productVariant->setOnHand(9999);
-
-                // Associer la variante au produit
-                $product->addVariant($productVariant);
-
-                // Créer un ChannelPricing pour la variante par défaut
-                $channelPricing = new ChannelPricing();
-                $channelPricing->setChannelCode($channel->getCode());
-                $channelPricing->setPrice(0); // Le prix sera calculé dynamiquement
-
-                $productVariant->addChannelPricing($channelPricing);
-
-                // Persister le produit
+                // Persistance du produit
                 $em->persist($product);
             }
 
-            // Flush final
+            // Flush final pour sauvegarder toutes les entités
             $em->flush();
 
             $this->addFlash('success', 'Photos uploadées avec succès !');
 
             return $this->redirectToRoute('photographer_dashboard');
         }
+
+        return $this->render('@PhotoPlugin/photographer/upload.html.twig', [
+            'form' => $form->createView(),
+        ]);
+        // ---------------------- Méthodes Privées ----------------------
+
+
+
+    }
+    /**
+     * Obtient le répertoire d'upload basé sur le slug de l'événement.
+     */
+    private function getUploadDir(string $eventSlug): string
+    {
+        return sprintf('%s/public/media/image/%s', $this->getParameter('kernel.project_dir'), $eventSlug);
+    }
+
+    /**
+     * Crée le répertoire d'upload s'il n'existe pas.
+     */
+    private function createDirectoryIfNotExists(string $directory): void
+    {
+        $filesystem = new Filesystem();
+        if (!$filesystem->exists($directory)) {
+            $filesystem->mkdir($directory, 0755);
+        }
+    }
+
+    /**
+     * Récupère le taxon spécifié.
+     */
+    private function getTaxon(EntityManagerInterface $em, string $code): TaxonInterface
+    {
+        $taxon = $em->getRepository(TaxonInterface::class)->findOneBy(['code' => $code]);
+        if (!$taxon) {
+            throw new \Exception(sprintf('Le taxon "%s" n\'a pas été trouvé.', $code));
+        }
+        return $taxon;
+    }
+
+    /**
+     * Récupère le canal spécifié.
+     */
+    private function getChannel(ChannelRepositoryInterface $channelRepository, string $code): ChannelInterface
+    {
+        $channel = $channelRepository->findOneByCode($code);
+        if (!$channel) {
+            throw new \Exception(sprintf('Le canal "%s" n\'a pas été trouvé.', $code));
+        }
+        return $channel;
+    }
+
+    /**
+     * Récupère les options de produit nécessaires.
+     */
+    private function getProductOptions(ProductOptionRepositoryInterface $productOptionRepository): array
+    {
+        $optionCodes = [
+            'product_type',
+            'digital_option',
+            'print_size',
+            'print_option',
+            'rigid_size',
+            'rigid_option',
+            'goodie_type',
+        ];
+
+        $productOptions = [];
+        foreach ($optionCodes as $code) {
+            $option = $productOptionRepository->findOneBy(['code' => $code]);
+            if (!$option) {
+                throw new \Exception(sprintf('L\'option de produit "%s" n\'a pas été trouvée.', $code));
+            }
+            $productOptions[$code] = $option;
+        }
+
+        return $productOptions;
+    }
+
+    /**
+     * S'assure que chaque option de produit possède une valeur par défaut.
+     */
+    private function ensureDefaultOptionValues(EntityManagerInterface $em, array $productOptions): void
+    {
+        foreach ($productOptions as $optionCode => $option) {
+            $defaultValueCode = 'default_' . $optionCode;
+            $defaultValueLabel = '-- Veuillez sélectionner --';
+
+            $defaultOptionValue = $this->getOptionValueByCode($option, $defaultValueCode);
+            if (!$defaultOptionValue) {
+                // Créer la valeur d'option par défaut
+                $defaultOptionValue = new ProductOptionValue();
+                $defaultOptionValue->setCurrentLocale('fr_FR');
+                $defaultOptionValue->setFallbackLocale('fr_FR');
+                $defaultOptionValue->setCode($defaultValueCode);
+                $defaultOptionValue->setValue($defaultValueLabel);
+                $defaultOptionValue->setOption($option);
+
+                $option->addValue($defaultOptionValue);
+                $em->persist($defaultOptionValue);
+                $em->persist($option);
+            }
+        }
+    }
+
+    /**
+     * Récupère les valeurs par défaut pour chaque option de produit.
+     */
+    private function getDefaultOptionValues(EntityManagerInterface $em, array $productOptions): array
+    {
+        $defaultOptionValues = [];
+        foreach ($productOptions as $optionCode => $option) {
+            $defaultValueCode = 'default_' . $optionCode;
+            $defaultOptionValue = $this->getOptionValueByCode($option, $defaultValueCode);
+            if (!$defaultOptionValue) {
+                throw new \Exception("La valeur d'option par défaut pour l'option '$optionCode' n'a pas été trouvée.");
+            }
+            $defaultOptionValues[$optionCode] = $defaultOptionValue;
+        }
+        return $defaultOptionValues;
+    }
+
+    /**
+     * Génère les variantes du produit en fonction des données fournies.
+     *
+     * @param Product $product
+     * @param array $variantsData
+     * @param array $productOptions
+     * @param array $defaultOptionValues
+     * @param ChannelInterface $channel
+     * @param EntityManagerInterface $em
+     */
+    private function generateVariants(
+        Product $product,
+        array $variantsData,
+        array $productOptions,
+        array $defaultOptionValues,
+        ChannelInterface $channel,
+        EntityManagerInterface $em
+    ): void {
+        foreach ($variantsData as $variantData) {
+            $variant = new ProductVariant();
+            $variant->setCurrentLocale('fr_FR');
+            $variant->setName($product->getName() . ' - ' . $variantData['name_suffix']);
+            $variant->setCode(uniqid('VARIANT_'));
+            $variant->setOnHand(9999); // Quantité disponible
+
+            // Récupérer les options spécifiées pour cette variante
+            $specifiedOptions = $variantData['options'];
+
+            foreach ($specifiedOptions as $optionCode => $valueCode) {
+                if (!isset($productOptions[$optionCode])) {
+                    throw new \Exception("L'option de produit '$optionCode' n'existe pas.");
+                }
+
+                $option = $productOptions[$optionCode];
+                $optionValue = $this->getOptionValueByCode($option, $valueCode);
+
+                if (!$optionValue) {
+                    throw new \Exception("La valeur d'option '$valueCode' pour l'option '$optionCode' n'a pas été trouvée.");
+                }
+
+                $variant->addOptionValue($optionValue);
+            }
+
+            // Déterminer les options non spécifiées et leur attribuer les valeurs par défaut
+            $allOptionCodes = array_keys($productOptions);
+            $unspecifiedOptions = array_diff($allOptionCodes, array_keys($specifiedOptions));
+
+            foreach ($unspecifiedOptions as $optionCode) {
+                if (!isset($defaultOptionValues[$optionCode])) {
+                    throw new \Exception("La valeur d'option par défaut pour l'option '$optionCode' n'est pas définie.");
+                }
+                $defaultOptionValue = $defaultOptionValues[$optionCode];
+                $variant->addOptionValue($defaultOptionValue);
+            }
+
+            // Définir le prix
+            $price = $variantData['price'];
+            $channelPricing = new ChannelPricing();
+            $channelPricing->setChannelCode($channel->getCode());
+            $channelPricing->setPrice($price); // Prix en centimes
+            $variant->addChannelPricing($channelPricing);
+
+            // Ajouter la variante au produit
+            $product->addVariant($variant);
+        }
+    }
+
+    /**
+     * Crée un produit avec ses images.
+     *
+     * @param Event $event
+     * @param UploadedFile $photo
+     * @param string $eventSlug
+     * @return Product
+     */
+    private function createProduct(Event $event, UploadedFile $photo, string $eventSlug): Product
+    {
+        $slugify = new Slugify();
+        $product = new Product();
+        $product->setCurrentLocale('fr_FR');
+        $product->setFallbackLocale('fr_FR');
+
+        $productName = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+        $product->setName($productName);
+        $product->setCode(uniqid('PHOTO_'));
+        $product->setPhotographer($this->getUser());
+        $product->setEvent($event);
+        $product->setEnabled(true);
+
+        // Définir la méthode de sélection de variante sur 'match'
+        $product->setVariantSelectionMethod(ProductInterface::VARIANT_SELECTION_MATCH);
+
+        // Descriptions
+        $product->setShortDescription('Photo de l’événement ' . $event->getName());
+        $product->setDescription('Cette photo a été prise lors de l’événement ' . $event->getName() . '.');
+
+        // Générer un slug unique
+        $slug = $slugify->slugify($productName . '-' . uniqid());
+        $product->setSlug($slug);
+
+        // Déplacer le fichier
+        $newFileName = bin2hex(random_bytes(8)) . '.' . $photo->guessExtension();
+        $photo->move($this->getUploadDir($eventSlug), $newFileName);
+
+        // Créer l'image du produit
+        $productImage = new ProductImage();
+        $productImage->setPath(sprintf('%s/%s', $eventSlug, $newFileName)); // Chemin relatif à "media/image"
+        $productImage->setType('main');
+        $product->addImage($productImage);
+
+        return $product;
+    }
+
+    /**
+     * Associe le produit au taxon et au canal.
+     *
+     * @param Product $product
+     * @param TaxonInterface $taxon
+     * @param ChannelInterface $channel
+     */
+    private function associateTaxonAndChannel(Product $product, TaxonInterface $taxon, ChannelInterface $channel): void
+    {
+        // Associer le produit au taxon
+        $productTaxon = new ProductTaxon();
+        $productTaxon->setProduct($product);
+        $productTaxon->setTaxon($taxon);
+        $productTaxon->setPosition(0); // Optionnel
+        $product->addProductTaxon($productTaxon);
+
+        // Associer le produit au canal
+        $product->addChannel($channel);
+    }
+
+    /**
+     * Associe les options de produit au produit.
+     *
+     * @param Product $product
+     * @param array $productOptions
+     */
+    private function associateOptionsToProduct(Product $product, array $productOptions): void
+    {
+        foreach ($productOptions as $option) {
+            $product->addOption($option);
+        }
+    }
+
+    /**
+     * Récupère une valeur d'option de produit par son code.
+     *
+     * @param ProductOptionInterface $option
+     * @param string $valueCode
+     * @return ProductOptionValueInterface|null
+     */
+    private function getOptionValueByCode(ProductOptionInterface $option, string $valueCode): ?ProductOptionValueInterface
+    {
+        foreach ($option->getValues() as $value) {
+            if ($value->getCode() === $valueCode) {
+                return $value;
+            }
+        }
+        return null;
     }
 }
