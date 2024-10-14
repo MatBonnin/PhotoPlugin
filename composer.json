@@ -1,6 +1,6 @@
 {
-    "type": "sylius-plugin",
-    "name": "sylius/photo-plugin",
+    "type": "websteem-plugin",
+    "name": "websteem/photo-plugin",
     "description": "A Sylius plugin for selling photos",
     "keywords": [
         "sylius",
