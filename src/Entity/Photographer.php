@@ -5,15 +5,16 @@ namespace Sylius\Plugin\PhotoPlugin\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Sylius\Component\Core\Model\AdminUser;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
 use Sylius\Component\Resource\Model\ResourceInterface;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="photographer")
  */
-class Photographer implements ResourceInterface, UserInterface, PasswordAuthenticatedUserInterface
+class Photographer implements ResourceInterface, UserInterface
 {
 
 
@@ -25,6 +26,16 @@ class Photographer implements ResourceInterface, UserInterface, PasswordAuthenti
     private $id;
 
     /**
+     * @ORM\OneToOne(targetEntity="Sylius\Component\Core\Model\AdminUser", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="admin_user_id", referencedColumnName="id", nullable=false)
+     */
+    private $adminUser;
+
+    // ... (vos autres méthodes)
+
+
+
+    /**
      * @ORM\Column(type="string", unique=true)
      */
     private $email;
@@ -33,12 +44,6 @@ class Photographer implements ResourceInterface, UserInterface, PasswordAuthenti
      * @ORM\Column(type="string")
      */
     private $name;
-
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    private $password;
 
     /**
      * @ORM\Column(type="json")
@@ -55,6 +60,18 @@ class Photographer implements ResourceInterface, UserInterface, PasswordAuthenti
         $this->events = new ArrayCollection();
     }
 
+    public function getAdminUser(): AdminUser
+    {
+        return $this->adminUser;
+    }
+
+    public function setAdminUser(AdminUser $adminUser): self
+    {
+        $this->adminUser = $adminUser;
+
+        return $this;
+    }
+
     // Implémentation de UserInterface
 
     public function getId(): ?int
@@ -69,10 +86,6 @@ class Photographer implements ResourceInterface, UserInterface, PasswordAuthenti
 
 
 
-    public function getPassword(): string
-    {
-        return $this->password;
-    }
 
     public function getSalt()
     {
@@ -107,11 +120,7 @@ class Photographer implements ResourceInterface, UserInterface, PasswordAuthenti
 
     // Implémentation de PasswordAuthenticatedUserInterface
 
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-        return $this;
-    }
+
 
     public function getUserIdentifier(): string
     {

@@ -2,6 +2,8 @@
 
 namespace Sylius\Plugin\PhotoPlugin\Form\Type;
 
+use Sylius\Component\Core\Model\AdminUser;
+use Sylius\Plugin\PhotoPlugin\Entity\Event;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -10,7 +12,6 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Sylius\Plugin\PhotoPlugin\Entity\Photographer;
-use Sylius\Plugin\PhotoPlugin\Entity\Event;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -33,9 +34,10 @@ class PhotographerType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Email',
             ])
-            ->add('password', PasswordType::class, [
+            ->add('plainPassword', PasswordType::class, [
                 'label' => 'Mot de passe',
-                'mapped' => false, // On ne mappe pas directement le champ mot de passe sur l'entité
+                'mapped' => false,
+                'required' => true,
             ])
             ->add('events', EntityType::class, [
                 'class' => Event::class,
@@ -43,21 +45,34 @@ class PhotographerType extends AbstractType
                 'label' => 'Événements',
                 'multiple' => true,
                 'expanded' => true,
-                'by_reference' => false, // Important pour appeler les méthodes add/remove
+                'by_reference' => false,
             ]);
 
-        // Ajoutez cet écouteur d'événement pour encoder le mot de passe et synchroniser les relations
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
             /** @var Photographer $photographer */
             $photographer = $event->getData();
             $form = $event->getForm();
 
-            // Gestion du mot de passe
-            $plainPassword = $form->get('password')->getData();
+            // Création de l'AdminUser
+            $adminUser = new AdminUser();
+            //set local code
+            $adminUser->setLocaleCode('fr_FR');
+            $adminUser->setEmail($photographer->getEmail());
+            $adminUser->setUsername($photographer->getEmail());
+            $adminUser->setEnabled(true);
+
+            // Hachage du mot de passe
+            $plainPassword = $form->get('plainPassword')->getData();
             if ($plainPassword) {
-                $encodedPassword = $this->passwordHasher->hashPassword($photographer, $plainPassword);
-                $photographer->setPassword($encodedPassword);
+                $encodedPassword = $this->passwordHasher->hashPassword($adminUser, $plainPassword);
+                $adminUser->setPassword($encodedPassword);
             }
+
+            // Attribuer le rôle ROLE_PHOTOGRAPHER
+            $adminUser->addRole('ROLE_PHOTOGRAPHER');
+
+            // Associer l'AdminUser au Photographer
+            $photographer->setAdminUser($adminUser);
 
             // Synchronisation des relations avec les événements
             foreach ($photographer->getEvents() as $eventEntity) {
