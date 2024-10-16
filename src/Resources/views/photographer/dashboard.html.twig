@@ -1,34 +1,35 @@
-{% extends '@PhotoPlugin/base.html.twig' %}
+{% extends '@SyliusAdmin/layout.html.twig' %}
 
-{% block body %}
-    <div class="container mt-5">
-        <h1 class="mb-4">Tableau de bord Photographe</h1>
+{% block content %}
+    <div class="ui container">
+        <h1 class="ui header">Tableau de bord Photographe</h1>
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <p class="mb-0">Bienvenue, <strong>{{ app.user.username }}</strong> !</p>
-            <a href="{{ path('photographer_upload') }}" class="btn btn-primary">Uploader des photos</a>
-        </div>
+
 
         {% if events is not empty %}
             {% for eventData in events %}
                 {% set event = eventData.event %}
                 {% set products = eventData.products %}
 
-                <h2 class="mt-5 mb-4">{{ event.name }}</h2>
+                <h2 class="ui header">{{ event.name }}</h2>
 
-                <div class="row">
+                <div class="ui stackable four column grid">
                     {% for product in products %}
-                        <div class="col-md-3 mb-4">
-                            <div class="card h-100">
+                        <div class="column">
+                            <div class="ui card">
                                 {% if product.images|length > 0 %}
-                                    <a href="{{ asset('media/image/' ~ product.images|first.path) }}" data-toggle="lightbox" data-gallery="event-{{ event.id }}" data-title="{{ product.name }}">
-                                        <img src="{{ asset('media/image/' ~ product.images|first.path) }}" class="card-img-top" alt="{{ product.name }}">
+                                    <a href="{{ asset('media/image/' ~ product.images|first.path) }}" data-lightbox="event-{{ event.id }}" data-title="{{ product.name }}">
+                                        <div class="image">
+                                            <img src="{{ asset('media/image/' ~ product.images|first.path) }}" alt="{{ product.name }}">
+                                        </div>
                                     </a>
                                 {% else %}
-                                    <img src="https://via.placeholder.com/300x200?text=Aucune+image" class="card-img-top" alt="Aucune image disponible">
+                                    <div class="image">
+                                        <img src="https://via.placeholder.com/300x200?text=Aucune+image" alt="Aucune image disponible">
+                                    </div>
                                 {% endif %}
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ product.name }}</h5>
+                                <div class="content">
+                                    <div class="header">{{ product.name }}</div>
                                     <!-- Ajoutez d'autres informations si nécessaire -->
                                 </div>
                             </div>
@@ -37,7 +38,7 @@
                 </div>
             {% endfor %}
         {% else %}
-            <div class="alert alert-info">
+            <div class="ui message info">
                 <p>Vous n'avez pas encore uploadé de photos.</p>
             </div>
         {% endif %}

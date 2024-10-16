@@ -1,12 +1,18 @@
-{% extends '@PhotoPlugin/base.html.twig' %}
+{% extends '@SyliusAdmin/layout.html.twig' %}
 
-{% block body %}
-    <h1>Uploader des Photos</h1>
+{% block content %}
+    <div class="ui segment">
+        <h1 class="ui header">Uploader des Photos</h1>
 
-    {{ form_start(form) }}
-    {{ form_row(form.event) }}
-    {{ form_row(form.photos) }}
+        {{ form_start(form, {'attr': {'class': 'ui form'}}) }}
+        <div class="field">
+            {{ form_row(form.event) }}
+        </div>
+        <div class="field">
+            {{ form_row(form.photos) }}
+        </div>
 
-    <button type="submit">Uploader</button>
-    {{ form_end(form) }}
+        <button type="submit" class="ui primary button">Uploader</button>
+        {{ form_end(form) }}
+    </div>
 {% endblock %}

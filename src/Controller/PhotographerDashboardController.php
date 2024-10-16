@@ -6,12 +6,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Product\Product;
+use Sylius\Plugin\PhotoPlugin\Entity\Photographer;
+use Sylius\Component\Core\Model\AdminUser;
 
 class PhotographerDashboardController extends AbstractController
 {
+    /**
+     * Affiche le tableau de bord des photographes avec les photos uploadées.
+     *
+     * @param EntityManagerInterface $em
+     * @return Response
+     */
     public function index(EntityManagerInterface $em): Response
     {
-        $photographer = $this->getUser();
+        // Récupérer l'utilisateur actuellement connecté
+        /** @var AdminUser $adminUser */
+        $adminUser = $this->getUser();
+
+        if (!$adminUser instanceof AdminUser) {
+            throw $this->createAccessDeniedException('Vous devez être connecté en tant qu\'administrateur.');
+        }
+
+        // Récupérer l'entité Photographer associée à l'AdminUser
+        /** @var Photographer|null $photographer */
+        $photographer = $em->getRepository(Photographer::class)->findOneBy(['adminUser' => $adminUser]);
+
+        if (!$photographer) {
+            throw $this->createNotFoundException('Aucun photographe associé à cet utilisateur.');
+        }
 
         // Récupérer tous les produits (photos) uploadés par le photographe
         $productRepository = $em->getRepository(Product::class);

@@ -9,6 +9,7 @@ use App\Entity\Product\ProductVariant;
 use App\Entity\Product\ProductOptionValue;
 use App\Entity\Channel\ChannelPricing;
 use Sylius\Plugin\PhotoPlugin\Entity\Event;
+use Sylius\Plugin\PhotoPlugin\Entity\Photographer;
 use Cocur\Slugify\Slugify;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -24,6 +25,7 @@ use Sylius\Component\Product\Repository\ProductOptionRepositoryInterface;
 use Sylius\Component\Taxonomy\Model\TaxonInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sylius\Plugin\PhotoPlugin\Form\Type\MassPhotoUploadType;
+use Sylius\Component\Core\Model\AdminUser;
 
 class PhotoController extends AbstractController
 {
@@ -64,6 +66,7 @@ class PhotoController extends AbstractController
             // Récupérer les valeurs d'options par défaut
             $defaultOptionValues = $this->getDefaultOptionValues($em, $productOptions);
 
+            // Définir les données des variantes
             // Définir les données des variantes
             $variantsData = [
                 // Photos Digitales / Numériques
@@ -342,7 +345,7 @@ class PhotoController extends AbstractController
 
             foreach ($photos as $photo) {
                 // Création du produit
-                $product = $this->createProduct($event, $photo, $eventSlug);
+                $product = $this->createProduct($event, $photo, $eventSlug, $em);
 
                 // Association au taxon et au canal
                 $this->associateTaxonAndChannel($product, $photosTaxon, $channel);
@@ -368,11 +371,10 @@ class PhotoController extends AbstractController
         return $this->render('@PhotoPlugin/photographer/upload.html.twig', [
             'form' => $form->createView(),
         ]);
-        // ---------------------- Méthodes Privées ----------------------
-
-
-
     }
+
+
+
     /**
      * Obtient le répertoire d'upload basé sur le slug de l'événement.
      */
@@ -559,9 +561,10 @@ class PhotoController extends AbstractController
      * @param Event $event
      * @param UploadedFile $photo
      * @param string $eventSlug
+     * @param EntityManagerInterface $em
      * @return Product
      */
-    private function createProduct(Event $event, UploadedFile $photo, string $eventSlug): Product
+    private function createProduct(Event $event, UploadedFile $photo, string $eventSlug, EntityManagerInterface $em): Product
     {
         $slugify = new Slugify();
         $product = new Product();
@@ -571,7 +574,22 @@ class PhotoController extends AbstractController
         $productName = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
         $product->setName($productName);
         $product->setCode(uniqid('PHOTO_'));
-        $product->setPhotographer($this->getUser());
+
+        // Récupérer l'AdminUser connecté
+        /** @var AdminUser $adminUser */
+        $adminUser = $this->getUser();
+
+        // Récupérer le Photographer associé à l'AdminUser
+        /** @var Photographer|null $photographer */
+        $photographer = $em->getRepository(Photographer::class)->findOneBy(['adminUser' => $adminUser]);
+
+        if (!$photographer) {
+            throw new \Exception('Aucun photographe associé à cet utilisateur.');
+        }
+
+        // Assigner le Photographer au produit
+        $product->setPhotographer($photographer);
+
         $product->setEvent($event);
         $product->setEnabled(true);
 

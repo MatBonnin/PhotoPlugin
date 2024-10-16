@@ -10,7 +10,7 @@ photographer_logout:
     path: /photographer/logout
 
 photographer_dashboard:
-    path: /photographer/dashboard
+    path: /admin/photographer/dashboard
     controller: Sylius\Plugin\PhotoPlugin\Controller\PhotographerDashboardController::index
 
 photographer_create:
@@ -19,7 +19,7 @@ photographer_create:
     methods: [GET, POST]
 
 photographer_upload:
-    path: /photographer/upload
+    path: /admin/photographer/upload
     controller: Sylius\Plugin\PhotoPlugin\Controller\PhotoController::upload
 
 event_photos:
