@@ -1,6 +1,6 @@
 {
-    "type": "websteem-plugin",
-    "name": "websteem/photo-plugin",
+    "type": "sylius-plugin",
+    "name": "sylius/photo-plugin",
     "description": "A Sylius plugin for selling photos",
     "keywords": [
         "sylius",
@@ -66,8 +66,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Sylius\\Plugin\\PhotoPlugin\\": "src/",
-            "App\\": "../sylliusGriff/src/"
+            "Sylius\\Plugin\\PhotoPlugin\\": "src/"
 
         }
     },
