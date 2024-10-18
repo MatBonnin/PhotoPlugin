@@ -26,6 +26,7 @@ use Sylius\Component\Taxonomy\Model\TaxonInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sylius\Plugin\PhotoPlugin\Form\Type\MassPhotoUploadType;
 use Sylius\Component\Core\Model\AdminUser;
+use Brille24\SyliusTierPricePlugin\Entity\TierPrice;
 
 class PhotoController extends AbstractController
 {
@@ -66,282 +67,8 @@ class PhotoController extends AbstractController
             // Récupérer les valeurs d'options par défaut
             $defaultOptionValues = $this->getDefaultOptionValues($em, $productOptions);
 
-            // Définir les données des variantes
-            // Définir les données des variantes
-            $variantsData = [
-                // Photos Digitales / Numériques
-                [
-                    'name_suffix' => 'Fichier numérique basse résolution 2000PX',
-                    'price' => 1100, // 11,00 € en centimes
-                    'options' => [
-                        'product_type' => 'digital',
-                        'digital_option' => 'low_res',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Fichier numérique HD ≥ 5000PX',
-                    'price' => 1800, // 18,00 € en centimes
-                    'options' => [
-                        'product_type' => 'digital',
-                        'digital_option' => 'high_res',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Fichier numérique HD ≥ 5000PX avec incrustation de la borne du Col',
-                    'price' => 2200, // 22,00 € en centimes
-                    'options' => [
-                        'product_type' => 'digital',
-                        'digital_option' => 'high_res_with_incrustation_prin',
-                    ],
-                ],
-
-                // Tirages Papiers (250gr/m² Lustré)
-                [
-                    'name_suffix' => 'Tirage Papier 15x20 cm',
-                    'price' => 1300, // 13,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '15x20'
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 15x20 cm avec incrustation de la borne du Col',
-                    'price' => 1700, // 17,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '15x20',
-                        'print_option' => 'with_incrustation_print',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 15x21 cm présenté dans un cartonnage',
-                    'price' => 1700, // 17,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '15x21',
-                        'print_option' => 'with_cartonnage',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 18x24 cm',
-                    'price' => 1500, // 15,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '18x24'
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 18x24 cm avec incrustation de la borne du Col',
-                    'price' => 1900, // 19,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '18x24',
-                        'print_option' => 'with_incrustation_print'
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 18x24 cm présenté dans un cartonnage',
-                    'price' => 1900, // 19,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '18x24',
-                        'print_option' => 'with_cartonnage'
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 20x30 cm',
-                    'price' => 1800, // 18,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '20x30'
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 20X30 cm titré avec incrustation de la borne du Col',
-                    'price' => 2200, // 22,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '20x30',
-                        'print_option' => 'with_incrustation_print',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 30x40 cm (Fichier HD offert)',
-                    'price' => 3900, // 39,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '30x40',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 30x40 cm titré avec incrustation de la borne du Col (Fichier HD offert)',
-                    'price' => 4300, // 43,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '30x40',
-                        'print_option' => 'with_incrustation_print',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 40x60 cm (Fichier HD offert)',
-                    'price' => 4500, // 45,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '40x60',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 40x60 cm titré avec incrustation de la borne du Col (Fichier HD offert)',
-                    'price' => 4900, // 49,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '40x60',
-                        'print_option' => 'with_incrustation_print',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 50x75 cm (Fichier HD offert)',
-                    'price' => 5500, // 55,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '50x75',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 50x75 cm titré avec incrustation de la borne du Col (Fichier HD offert)',
-                    'price' => 5900, // 59,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '50x75',
-                        'print_option' => 'with_incrustation_print',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 60x90 cm (Fichier HD offert)',
-                    'price' => 7500, // 75,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '60x90',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tirage Papier 60x90 cm avec incrustation de la borne du Col (Fichier HD offert)',
-                    'price' => 7900, // 79,00 € en centimes
-                    'options' => [
-                        'product_type' => 'print',
-                        'print_size' => '60x90',
-                        'print_option' => 'with_incrustation_print',
-                    ],
-                ],
-
-                // Photos Supports Rigides (Aluminium 2 mm)(Produit fini Prêt à mettre au mur)
-                [
-                    'name_suffix' => 'Photo sur Plaque 15x20 cm en Aluminium',
-                    'price' => 2500, // 25,00 € en centimes
-                    'options' => [
-                        'product_type' => 'rigid_support',
-                        'rigid_size' => '15x20r',
-                        'rigid_option' => 'standard',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Photo sur Plaque 18x24 cm en Aluminium',
-                    'price' => 2900, // 29,00 € en centimes
-                    'options' => [
-                        'product_type' => 'rigid_support',
-                        'rigid_size' => '18x24r',
-                        'rigid_option' => 'standard',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Photo sur Plaque 20x30 cm en Aluminium',
-                    'price' => 3500, // 35,00 € en centimes
-                    'options' => [
-                        'product_type' => 'rigid_support',
-                        'rigid_size' => '20x30r',
-                        'rigid_option' => 'standard',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Photo personnalisée Magazine sur Plaque 20X30 cm en Aluminium',
-                    'price' => 4000, // 40,00 € en centimes
-                    'options' => [
-                        'product_type' => 'rigid_support',
-                        'rigid_size' => '20x30r',
-                        'rigid_option' => 'magazine',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Photo sur Plaque 30X40 cm en Aluminium',
-                    'price' => 5900, // 59,00 € en centimes
-                    'options' => [
-                        'product_type' => 'rigid_support',
-                        'rigid_size' => '30x40r',
-                        'rigid_option' => 'standard',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Photo personnalisée Magazine sur Plaque 30X40 cm en Aluminium (nouveau !!)',
-                    'price' => 6400, // 64,00 € en centimes
-                    'options' => [
-                        'product_type' => 'rigid_support',
-                        'rigid_size' => '30x40r',
-                        'rigid_option' => 'magazine',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Photo sur Plaque 40X60 cm en Aluminium',
-                    'price' => 7500, // 75,00 € en centimes
-                    'options' => [
-                        'product_type' => 'rigid_support',
-                        'rigid_size' => '40x60r',
-                        'rigid_option' => 'standard',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Photo personnalisée Magazine sur Plaque 40x60 cm en Aluminium (nouveau !!)',
-                    'price' => 7900, // 79,00 € en centimes
-                    'options' => [
-                        'product_type' => 'rigid_support',
-                        'rigid_size' => '40x60r',
-                        'rigid_option' => 'magazine',
-                    ],
-                ],
-
-                // Photos sur Goodies
-                [
-                    'name_suffix' => 'Mug céramique avec incrustation de la borne du Col',
-                    'price' => 2200, // 22,00 € en centimes
-                    'options' => [
-                        'product_type' => 'goodies',
-                        'goodie_type' => 'mug',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Tapis de souris en néoprène 197x235 mm',
-                    'price' => 2200, // 22,00 € en centimes
-                    'options' => [
-                        'product_type' => 'goodies',
-                        'goodie_type' => 'mouse_pad',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'Puzzle 120 pièces 190x280 mm',
-                    'price' => 2200, // 22,00 € en centimes
-                    'options' => [
-                        'product_type' => 'goodies',
-                        'goodie_type' => 'puzzle',
-                    ],
-                ],
-                [
-                    'name_suffix' => 'T-Shirt Taille S/M/L/XL 100% Polyester',
-                    'price' => 2400, // 24,00 € en centimes
-                    'options' => [
-                        'product_type' => 'goodies',
-                        'goodie_type' => 't_shirt',
-                    ],
-                ],
-            ];
+            // Définir les données des variantes avec leurs prix dégressifs
+            $variantsData = $this->getVariantsDataWithTierPrices();
 
             foreach ($photos as $photo) {
                 // Création du produit
@@ -353,8 +80,8 @@ class PhotoController extends AbstractController
                 // Association des options au produit
                 $this->associateOptionsToProduct($product, $productOptions);
 
-                // Génération des variantes
-                $this->generateVariants($product, $variantsData, $productOptions, $defaultOptionValues, $channel, $em);
+                // Génération des variantes avec prix dégressifs
+                $this->generateVariantsWithTierPrices($product, $variantsData, $productOptions, $defaultOptionValues, $channel, $em);
 
                 // Persistance du produit
                 $em->persist($product);
@@ -375,6 +102,492 @@ class PhotoController extends AbstractController
 
 
 
+    private function getVariantsDataWithTierPrices(): array
+    {
+        return [
+            // Photos Digitales / Numériques
+            [
+                'name_suffix' => 'Fichier numérique basse résolution 2000PX',
+                'options' => [
+                    'product_type' => 'digital',
+                    'digital_option' => 'low_res',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1100], // 11,00 €
+                    ['qty' => 2, 'price' => 1000], // 10,00 €
+                    ['qty' => 3, 'price' => 900],  // 9,00 €
+                    ['qty' => 6, 'price' => 800],  // 8,00 €
+                    ['qty' => 9, 'price' => 700],  // 7,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Fichier numérique HD ≥ 5000PX',
+                'options' => [
+                    'product_type' => 'digital',
+                    'digital_option' => 'high_res',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1800], // 18,00 €
+                    ['qty' => 2, 'price' => 1700], // 17,00 €
+                    ['qty' => 3, 'price' => 1600], // 16,00 €
+                    ['qty' => 6, 'price' => 1500], // 15,00 €
+                    ['qty' => 9, 'price' => 1400], // 14,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Fichier numérique HD ≥ 5000PX avec incrustation de la borne du Col',
+                'options' => [
+                    'product_type' => 'digital',
+                    'digital_option' => 'high_res_with_incrustation_prin',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 2200], // 22,00 €
+                    ['qty' => 2, 'price' => 2100], // 21,00 €
+                    ['qty' => 3, 'price' => 2000], // 20,00 €
+                    ['qty' => 6, 'price' => 1900], // 19,00 €
+                    ['qty' => 9, 'price' => 1800], // 18,00 €
+                ],
+            ],
+
+            // Tirages Papiers (250gr/m² Lustré)
+            [
+                'name_suffix' => 'Tirage Papier 15x20 cm',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '15x20',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1300], // 13,00 €
+                    ['qty' => 2, 'price' => 1200], // 12,00 €
+                    ['qty' => 3, 'price' => 1100], // 11,00 €
+                    ['qty' => 6, 'price' => 1000], // 10,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 15x20 cm avec incrustation de la borne du Col',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '15x20',
+                    'print_option' => 'with_incrustation_print',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1700], // 17,00 €
+                    ['qty' => 2, 'price' => 1600], // 16,00 €
+                    ['qty' => 3, 'price' => 1500], // 15,00 €
+                    ['qty' => 6, 'price' => 1400], // 14,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 15x21 cm présenté dans un cartonnage',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '15x21',
+                    'print_option' => 'with_cartonnage',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1700], // 17,00 €
+                    ['qty' => 2, 'price' => 1600], // 16,00 €
+                    ['qty' => 3, 'price' => 1500], // 15,00 €
+                    ['qty' => 6, 'price' => 1400], // 14,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 18x24 cm',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '18x24',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1500], // 15,00 €
+                    ['qty' => 2, 'price' => 1400], // 14,00 €
+                    ['qty' => 3, 'price' => 1300], // 13,00 €
+                    ['qty' => 6, 'price' => 1200], // 12,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 18x24 cm avec incrustation de la borne du Col',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '18x24',
+                    'print_option' => 'with_incrustation_print',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1900], // 19,00 €
+                    ['qty' => 2, 'price' => 1800], // 18,00 €
+                    ['qty' => 3, 'price' => 1700], // 17,00 €
+                    ['qty' => 6, 'price' => 1600], // 16,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 18x24 cm présenté dans un cartonnage',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '18x24',
+                    'print_option' => 'with_cartonnage',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1900], // 19,00 €
+                    ['qty' => 2, 'price' => 1800], // 18,00 €
+                    ['qty' => 3, 'price' => 1700], // 17,00 €
+                    ['qty' => 6, 'price' => 1600], // 16,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 20x30 cm',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '20x30',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 1800], // 18,00 €
+                    ['qty' => 2, 'price' => 1700], // 17,00 €
+                    ['qty' => 3, 'price' => 1600], // 16,00 €
+                    ['qty' => 6, 'price' => 1500], // 15,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 20x30 cm titré avec incrustation de la borne du Col',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '20x30',
+                    'print_option' => 'with_incrustation_print',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 2200], // 22,00 €
+                    ['qty' => 2, 'price' => 2100], // 21,00 €
+                    ['qty' => 3, 'price' => 2000], // 20,00 €
+                    ['qty' => 6, 'price' => 1900], // 19,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 30x40 cm (Fichier HD offert)',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '30x40',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 3900], // 39,00 €
+                    ['qty' => 2, 'price' => 3600], // 36,00 €
+                    ['qty' => 3, 'price' => 3300], // 33,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 30x40 cm titré avec incrustation de la borne du Col (Fichier HD offert)',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '30x40',
+                    'print_option' => 'with_incrustation_print',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 4300], // 43,00 €
+                    ['qty' => 2, 'price' => 4000], // 40,00 €
+                    ['qty' => 3, 'price' => 3700], // 37,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 40x60 cm (Fichier HD offert)',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '40x60',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 4500], // 45,00 €
+                    ['qty' => 2, 'price' => 4200], // 42,00 €
+                    ['qty' => 3, 'price' => 4000], // 40,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 40x60 cm titré avec incrustation de la borne du Col (Fichier HD offert)',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '40x60',
+                    'print_option' => 'with_incrustation_print',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 4900], // 49,00 €
+                    ['qty' => 2, 'price' => 4600], // 46,00 €
+                    ['qty' => 3, 'price' => 4400], // 44,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 50x75 cm (Fichier HD offert)',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '50x75',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 5500], // 55,00 €
+                    ['qty' => 2, 'price' => 5200], // 52,00 €
+                    ['qty' => 3, 'price' => 5000], // 50,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 50x75 cm titré avec incrustation de la borne du Col (Fichier HD offert)',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '50x75',
+                    'print_option' => 'with_incrustation_print',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 5900], // 59,00 €
+                    ['qty' => 2, 'price' => 5600], // 56,00 €
+                    ['qty' => 3, 'price' => 5400], // 54,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 60x90 cm (Fichier HD offert)',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '60x90',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 7500], // 75,00 €
+                    ['qty' => 2, 'price' => 7200], // 72,00 €
+                    ['qty' => 3, 'price' => 7000], // 70,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tirage Papier 60x90 cm avec incrustation de la borne du Col (Fichier HD offert)',
+                'options' => [
+                    'product_type' => 'print',
+                    'print_size' => '60x90',
+                    'print_option' => 'with_incrustation_print',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 7900], // 79,00 €
+                    ['qty' => 2, 'price' => 7600], // 76,00 €
+                    ['qty' => 3, 'price' => 7300], // 73,00 €
+                ],
+            ],
+
+            // Photos Supports Rigides (Aluminium 2 mm)
+            [
+                'name_suffix' => 'Photo sur Plaque 15x20 cm en Aluminium',
+                'options' => [
+                    'product_type' => 'rigid_support',
+                    'rigid_size' => '15x20r',
+                    'rigid_option' => 'standard',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 2500], // 25,00 €
+                    ['qty' => 2, 'price' => 2300], // 23,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Photo sur Plaque 18x24 cm en Aluminium',
+                'options' => [
+                    'product_type' => 'rigid_support',
+                    'rigid_size' => '18x24r',
+                    'rigid_option' => 'standard',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 2900], // 29,00 €
+                    ['qty' => 2, 'price' => 2600], // 26,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Photo sur Plaque 20x30 cm en Aluminium',
+                'options' => [
+                    'product_type' => 'rigid_support',
+                    'rigid_size' => '20x30r',
+                    'rigid_option' => 'standard',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 3500], // 35,00 €
+                    ['qty' => 2, 'price' => 3200], // 32,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Photo personnalisée Magazine sur Plaque 20X30 cm en Aluminium',
+                'options' => [
+                    'product_type' => 'rigid_support',
+                    'rigid_size' => '20x30r',
+                    'rigid_option' => 'magazine',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 4000], // 40,00 €
+                    ['qty' => 2, 'price' => 3700], // 37,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Photo sur Plaque 30X40 cm en Aluminium',
+                'options' => [
+                    'product_type' => 'rigid_support',
+                    'rigid_size' => '30x40r',
+                    'rigid_option' => 'standard',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 5900], // 59,00 €
+                    ['qty' => 2, 'price' => 5500], // 55,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Photo personnalisée Magazine sur Plaque 30X40 cm en Aluminium (nouveau !!)',
+                'options' => [
+                    'product_type' => 'rigid_support',
+                    'rigid_size' => '30x40r',
+                    'rigid_option' => 'magazine',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 6400], // 64,00 €
+                    ['qty' => 2, 'price' => 5900], // 59,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Photo sur Plaque 40X60 cm en Aluminium',
+                'options' => [
+                    'product_type' => 'rigid_support',
+                    'rigid_size' => '40x60r',
+                    'rigid_option' => 'standard',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 7500], // 75,00 €
+                    ['qty' => 2, 'price' => 6900], // 69,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Photo personnalisée Magazine sur Plaque 40x60 cm en Aluminium (nouveau !!)',
+                'options' => [
+                    'product_type' => 'rigid_support',
+                    'rigid_size' => '40x60r',
+                    'rigid_option' => 'magazine',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 7900], // 79,00 €
+                    ['qty' => 2, 'price' => 7400], // 74,00 €
+                ],
+            ],
+
+            // Photos sur Goodies
+            [
+                'name_suffix' => 'Mug céramique avec incrustation de la borne du Col',
+                'options' => [
+                    'product_type' => 'goodies',
+                    'goodie_type' => 'mug',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 2200], // 22,00 €
+                    ['qty' => 2, 'price' => 1900], // 19,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Tapis de souris en néoprène 197x235 mm',
+                'options' => [
+                    'product_type' => 'goodies',
+                    'goodie_type' => 'mouse_pad',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 2200], // 22,00 €
+                    ['qty' => 2, 'price' => 1900], // 19,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'Puzzle 120 pièces 190x280 mm',
+                'options' => [
+                    'product_type' => 'goodies',
+                    'goodie_type' => 'puzzle',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 2200], // 22,00 €
+                    ['qty' => 2, 'price' => 1900], // 19,00 €
+                ],
+            ],
+            [
+                'name_suffix' => 'T-Shirt Taille S/M/L/XL 100% Polyester',
+                'options' => [
+                    'product_type' => 'goodies',
+                    'goodie_type' => 't_shirt',
+                ],
+                'tier_prices' => [
+                    ['qty' => 1, 'price' => 2400], // 24,00 €
+                    ['qty' => 2, 'price' => 2200], // 22,00 €
+                ],
+            ],
+        ];
+    }
+
+
+
+
+
+    /**
+     * Génère les variantes avec les prix dégressifs.
+     *
+     * @param Product $product
+     * @param array $variantsData
+     * @param array $productOptions
+     * @param array $defaultOptionValues
+     * @param ChannelInterface $channel
+     * @param EntityManagerInterface $em
+     */
+    private function generateVariantsWithTierPrices(
+        Product $product,
+        array $variantsData,
+        array $productOptions,
+        array $defaultOptionValues,
+        ChannelInterface $channel,
+        EntityManagerInterface $em
+    ): void {
+        foreach ($variantsData as $variantData) {
+            $variant = new ProductVariant();
+            $variant->setCurrentLocale('fr_FR');
+            $variant->setName($product->getName() . ' - ' . $variantData['name_suffix']);
+            $variant->setCode(uniqid('VARIANT_'));
+            $variant->setOnHand(9999); // Quantité disponible
+
+            // Récupérer les options spécifiées pour cette variante
+            $specifiedOptions = $variantData['options'];
+
+            foreach ($specifiedOptions as $optionCode => $valueCode) {
+                if (!isset($productOptions[$optionCode])) {
+                    throw new \Exception("L'option de produit '$optionCode' n'existe pas.");
+                }
+
+                $option = $productOptions[$optionCode];
+                $optionValue = $this->getOptionValueByCode($option, $valueCode);
+
+                if (!$optionValue) {
+                    throw new \Exception("La valeur d'option '$valueCode' pour l'option '$optionCode' n'a pas été trouvée.");
+                }
+
+                $variant->addOptionValue($optionValue);
+            }
+
+            // Déterminer les options non spécifiées et leur attribuer les valeurs par défaut
+            $allOptionCodes = array_keys($productOptions);
+            $unspecifiedOptions = array_diff($allOptionCodes, array_keys($specifiedOptions));
+
+            foreach ($unspecifiedOptions as $optionCode) {
+                if (!isset($defaultOptionValues[$optionCode])) {
+                    throw new \Exception("La valeur d'option par défaut pour l'option '$optionCode' n'est pas définie.");
+                }
+                $defaultOptionValue = $defaultOptionValues[$optionCode];
+                $variant->addOptionValue($defaultOptionValue);
+            }
+
+            // Définir le prix de base (prix pour 1 unité)
+            $basePrice = $variantData['tier_prices'][0]['price'];
+            $channelPricing = new ChannelPricing();
+            $channelPricing->setChannelCode($channel->getCode());
+            $channelPricing->setPrice($basePrice); // Prix en centimes
+            $variant->addChannelPricing($channelPricing);
+
+            // Créer les prix dégressifs
+            foreach ($variantData['tier_prices'] as $tierPriceData) {
+                $tierPrice = new TierPrice();
+                $tierPrice->setQty($tierPriceData['qty']);
+                $tierPrice->setPrice($tierPriceData['price']); // Prix en centimes
+                $tierPrice->setChannel($channel);
+                $tierPrice->setProductVariant($variant);
+
+                $variant->addTierPrice($tierPrice);
+                $em->persist($tierPrice);
+            }
+
+            // Ajouter la variante au produit
+            $product->addVariant($variant);
+        }
+    }
     /**
      * Obtient le répertoire d'upload basé sur le slug de l'événement.
      */
